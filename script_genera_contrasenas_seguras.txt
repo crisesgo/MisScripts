@@ -1,0 +1,142 @@
+#!/bin/bash
+
+# Función para generar una contraseña
+generate_password() {
+    local length=$1
+    local include_uppercase=$2
+    local include_numbers=$3
+    local include_letters=$4
+    local include_special_chars=$5
+
+    # Definir caracteres permitidos según las opciones seleccionadas
+    chars=""
+
+    if [ "$include_letters" = "y" ]; then
+        chars="$charsabcdefghijklmnopqrstuvwxyz"
+    fi
+
+    if [ "$include_uppercase" = "y" ]; then
+        chars="$charsABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    fi
+
+    if [ "$include_numbers" = "y" ]; then
+        chars="$chars0123456789"
+    fi
+
+    if [ "$include_special_chars" = "y" ]; then
+        chars="$chars!@#$%^&*()-_=+[]{}|;:,.<>?/"
+    fi
+
+    # Generar la contraseña
+    password=$(cat /dev/urandom | tr -dc "$chars" | fold -w "$length" | head -n 1)
+
+    echo "$password"
+}
+
+# Función principal
+main() {
+    # Solicitar longitud de la contraseña
+    echo "Ingrese la longitud deseada para la contraseña:"
+    read length
+
+    # Validar que la longitud sea un número positivo
+    while ! [[ "$length" =~ ^[0-9]+$ ]] || [ "$length" -le 0 ]; do
+        echo "Longitud inválida. Ingrese un número entero positivo:"
+        read length
+    done
+
+    # Preguntar si incluir mayúsculas
+    echo "¿Desea incluir mayúsculas? (y/n):"
+    read include_uppercase
+
+    while [ "$include_uppercase" != "y" ] && [ "$include_uppercase" != "n" ]; do
+        echo "Respuesta inválida. Por favor, responda 'y' o 'n':"
+        read include_uppercase
+    done
+
+    # Preguntar si incluir números
+    echo "¿Desea incluir números? (y/n):"
+    read include_numbers
+
+    while [ "$include_numbers" != "y" ] && [ "$include_numbers" != "n" ]; do
+        echo "Respuesta inválida. Por favor, responda 'y' o 'n':"
+        read include_numbers
+    done
+
+    # Preguntar si incluir letras
+    echo "¿Desea incluir letras? (y/n):"
+    read include_letters
+
+    while [ "$include_letters" != "y" ] && [ "$include_letters" != "n" ]; do
+        echo "Respuesta inválida. Por favor, responda 'y' o 'n':"
+        read include_letters
+    done
+
+    # Preguntar si incluir caracteres especiales
+    echo "¿Desea incluir caracteres especiales? (y/n):"
+    read include_special_chars
+
+    while [ "$include_special_chars" != "y" ] && [ "$include_special_chars" != "n" ]; do
+        echo "Respuesta inválida. Por favor, responda 'y' o 'n':"
+        read include_special_chars
+    done
+
+    # Verificar que al menos una opción esté habilitada
+    if [ "$include_uppercase" = "n" ] && [ "$include_numbers" = "n" ] && [ "$include_letters" = "n" ] && [ "$include_special_chars" = "n" ]; then
+        echo "Debe seleccionar al menos una opción para generar la contraseña."
+        exit 1
+    fi
+
+    # Generar la contraseña
+    password=$(generate_password "$length" "$include_uppercase" "$include_numbers" "$include_letters" "$include_special_chars")
+
+    # Mostrar la contraseña
+    echo "Contraseña generada: $password"
+
+    # Pedir confirmación al usuario
+    echo "¿Acepta esta contraseña? (y/n):"
+    read accept
+
+    while [ "$accept" != "y" ] && [ "$accept" != "n" ]; do
+        echo "Respuesta inválida. Por favor, responda 'y' o 'n':"
+        read accept
+    done
+
+    if [ "$accept" = "y" ]; then
+        # Pedir nombre para la contraseña
+        echo "Ingrese un nombre para identificar esta contraseña:"
+        read name
+
+        # Guardar la contraseña en un archivo
+        echo "Nombre: $name | Contraseña: $password" >> passwords.txt
+        echo "La contraseña ha sido guardada en el archivo 'passwords.txt'."
+    else
+        echo "Contraseña rechazada. Puede volver a generar otra."
+    fi
+}
+
+# Ejecutar la función principal
+main
+
+
+
+Explicación del Script: 
+
+    Generación de Contraseña : La función generate_password utiliza /dev/urandom para generar una cadena aleatoria basada en los caracteres permitidos.
+    Validación de Entradas : Se verifica que la longitud sea un número positivo y que las respuestas sean válidas (y o n).
+    Opciones de Caracteres : El usuario puede elegir si desea incluir mayúsculas, números, letras y caracteres especiales.
+    Guardado de Contraseñas : Si el usuario acepta la contraseña generada, se le pide un nombre para identificarla y se guarda en un archivo llamado passwords.txt.
+    Requisitos Mínimos : Al menos una opción debe estar habilitada para generar la contraseña.
+     
+
+Uso: 
+
+    Guarda el script en un archivo, por ejemplo, password_generator.sh.
+    Hazlo ejecutable: chmod +x password_generator.sh.
+    Ejecútalo: ./password_generator.sh.
+     
+
+El archivo passwords.txt se creará automáticamente en el mismo directorio donde se ejecute el script, y contendrá todas las contraseñas generadas con sus respectivos nombres. 
+
+
+

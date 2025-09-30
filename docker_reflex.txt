@@ -1,0 +1,2 @@
+docker run -it --rm --user "$(id -u):$(id -g)" -v $(pwd)/full-stack-python:/app/full-stack-python -p 5555:3000 -w /app/full-stack-python python:3.11-slim bash -c "./arranque_docker_reflex.sh"
+
