@@ -16,7 +16,7 @@ underline=`tput smul`
 verificar_e_instalar_jq() {
     # Verificar si jq está instalado
     if command -v jq &> /dev/null; then
-        echo "jq ya está instalado."
+#        echo "jq ya está instalado."
         return 0
     fi
 
